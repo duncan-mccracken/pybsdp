@@ -2,6 +2,7 @@
 from os import listdir, mkdir, chown
 from os.path import isdir, join
 from pwd import getpwnam
+import os
 import plistlib
 import socket
 import select
@@ -9,7 +10,7 @@ import struct
 import sys
 import ConfigParser
 
-sys.path.append('/usr/local/lib/pybsdp')
+sys.path.append(os.path.realpath(os.path.join(os.path.dirname(__file__), '..', 'lib')))
 import dhcp
 import bsdp
 from interfaces import all_interfaces
@@ -146,7 +147,7 @@ def handleImageSelect(ip, dpacket, bpacket):
     if image['Type'] == 'NFS':
         dresponse.options[dhcp.OPTION_ROOT_PATH] = 'nfs:' + ip + ':' + netbootimagepath + ':' + bootimage['Path'] + '/' + bootimage['RootPath']
     else:
-        dresponse.options[dhcp.OPTION_ROOT_PATH] = 'http://' + ip + '/' + bootimage['Path'].replace(' ', '%20') + '/' + bootimage['RootPath'].replace(' ', '%20')
+        dresponse.options[dhcp.OPTION_ROOT_PATH] = 'http://' + ip + '/NetBoot/' + bootimage['Path'].replace(' ', '%20') + '/' + bootimage['RootPath'].replace(' ', '%20')
 
     #
     # Machine name will follow the pattern of: NetBootMAC
@@ -179,11 +180,11 @@ def handleImageSelect(ip, dpacket, bpacket):
 # Begin main.
 #
 config = ConfigParser.RawConfigParser()
-config.read('/etc/pybsdp.conf')
-netbootimagepath = config.get('pybsdp', 'imagepath')
-netbootclientpath = config.get('pybsdp', 'clientpath')
-netbootuser = config.get('pybsdp', 'netbootuser')
-netbootpass = config.get('pybsdp', 'netbootpass')
+config.read(os.path.realpath(os.path.join(os.path.dirname(__file__), '..', 'etc', 'bsdp.conf')))
+netbootimagepath = config.get('bsdp', 'imagepath')
+netbootclientpath = config.get('bsdp', 'clientpath')
+netbootuser = config.get('bsdp', 'netbootuser')
+netbootpass = config.get('bsdp', 'netbootpass')
 
 #
 # Listen for all DHCP packets.

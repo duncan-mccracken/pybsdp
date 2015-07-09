@@ -1,0 +1,10 @@
+# bsdpd - Python BSDPD job file
+
+description "BSDP NetBoot Service"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+respawn
+
+exec /usr/local/bsdp/sbin/bsdpd.py
